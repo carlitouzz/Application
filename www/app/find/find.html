@@ -1,13 +1,15 @@
 <ion-view>
   <ion-content class="padding">
-    <div ng-repeat="song in vm.songs">
+    <td-cards class="relative">
+  <td-card ng-repeat="song in vm.songs" class="absolute" ng-show="$first" on-swipe-right="vm.addFavorite()" on-swipe-left="vm.discardSong()">
       <div class="item item-image">
         <img ng-src="{{song.image_large}}" alt="">
         <div class="item">
           <h3 >{{song.title}}</h3>
           <p >{{song.artist}}</p>
         </div>
-      </div>
     </div>
+  </td-card>
+</td-cards>
   </ion-content>
 </ion-view>
