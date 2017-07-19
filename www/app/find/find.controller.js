@@ -5,24 +5,58 @@
   angular.module("starter")
   .controller("findController", findController);
 
-  findController.$inject = ["$scope",  "findService", "$rootScope"];
+  findController.$inject = ["$scope", "$rootScope", "songService", "$ionicPlatform"];
 
-  function findController ($scope, findService, $rootScope){
+  function findController ($scope,  $rootScope, songService, $ionicPlatform){
     var vm = this;
-    vm.songs = findService.getSongs();
+
     vm.addFavorite = addFavorite;
     vm.discardSong = discardSong;
+    vm.concatSongs = concatSongs;
+    vm.removeFirstSong = removeFirstSong;
+    vm.getSongs = getSongs;
+    vm.favorites = [];
+    vm.songs = [];
+    vm.audio = new Audio();
+    vm.playaudio = playaudio;
+
+    function playaudio(){
+      vm.audio.src = vm.songs[0].preview_url;
+      vm.audio.play();
+    }
+
+    function getSongs(){
+      return songService.getSongs();
+    }
+
+    $ionicPlatform.ready(start);
+
+    function concatSongs(){
+      vm.getSongs().then(function(songs){
+        vm.songs = vm.songs.concat(songs);
+        vm.playaudio();
+      })
+    }
+
+    function start(){
+      vm.concatSongs();
+    }
 
     function discardSong(){
-      vm.songs.splice(0,1);
-      //console.log(vm.songs.length);
+      vm.removeFirstSong();
+      vm.playaudio();
+      if(vm.songs.length<2){
+        vm.concatSongs();
+      }
     }
+
+    function removeFirstSong(){
+      vm.songs.splice(0,1);
+    }
+
     function addFavorite(){
-      $rootScope.favorites.push(vm.songs[0]);
-      vm.songs.splice(0,1);
-      //console.log($rootScope.favorites.length);
+      vm.favorites.push(vm.songs[0]);
+      vm.discardSong();
     }
-
   }
-
 })();
